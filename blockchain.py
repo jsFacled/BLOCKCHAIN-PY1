@@ -1,17 +1,18 @@
+
 from hashlib import sha256
 import json
+import time
 
-Class Block:
+class Block:
     def __init__(self, index, transactions, timestamp, previous_hash):
         self.index = index
         self.transactions = transactions
         self.timestamp = timestamp
         self.previous_hash = previous_hash
 
-def compute_hash(block):
-    block_string = json.dump(self.__dict__, sort = True)
-    return sha256(block_string.encode()).hexdigest()
-
+    def compute_hash(self):
+        block_string = json.dumps(self.__dict__, sort_keys = True)
+        return sha256(block_string.encode()).hexdigest()
 class Blockchain:
     def __init__(self):
         self.unconfirmed_transactions = []
@@ -27,4 +28,16 @@ class Blockchain:
     def last_block(self):
         return self.chain[-1]
         
+    def print_block(self, n):
+        if (len(self.chain) < n):
+            return
+        else:
+            block = self.chain(n)
+            return "\n Index: {}\n Transactions: {}\n Timestamp: {}\n PreviousHash: {}\n ".format(block.index, block.transactions, block.timestamp, block.previous_hash)
+
+#---Pruebo la Blockchain---
+
+a = Blockchain()
+print (a.print_block(0))
+
         
