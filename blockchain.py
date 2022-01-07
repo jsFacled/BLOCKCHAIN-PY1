@@ -1,6 +1,7 @@
 from hashlib import sha256
 import time
 import json
+from types import MethodDescriptorType
 from flask import Flask, app, request
 import requests
 
@@ -78,7 +79,8 @@ class Blockchain:
         self.add_block(new_block, proof)
         self.unconfirmed_transactions = []
         return new_block.index
- #TERCERA PARTE
+
+ # -- TERCERA PARTE --
 
 app = Flask (__name__)
 blockchain = Blockchain()
@@ -94,5 +96,22 @@ def new_transaction():
     blockchain.new_transaction(tx_data)
     return "Éxito", 201
 
+@app.route("/mine", methods = ["GET"])
+def mine_unconfirmed_transactions():
+    result = blockchain.mine()
+    if not result:
+        return "Nothing to mine"
+    return "Blocks {} is mined".format(result)
+
+@app.route("/chain", methods=["GET"])
+def get_chain():
+    chain_data = []
+    for block in blockchain.chain:
+        chain_data.append(block.__dict__)
+        return json.dumps({"length": len(chain_data), "chain": chain_data})
+
+@app.route("/pending_tx", methods = ["POST"])
+def get_pending_tx():
+    return json.dumps(blockchain.unconfirmed_transactions)
 
         
