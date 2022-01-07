@@ -1,6 +1,8 @@
 from hashlib import sha256
 import time
 import json
+from flask import Flask, app, request
+import requests
 
 class Block:
 
@@ -76,19 +78,21 @@ class Blockchain:
         self.add_block(new_block, proof)
         self.unconfirmed_transactions = []
         return new_block.index
+ #TERCERA PARTE
 
-""" --- probando la minería --- """
+app = Flask (__name__)
+blockchain = Blockchain()
 
-a = Blockchain()
-a.new_transaction('transaccion 1')
-a.new_transaction('transaccion 2')
-a.mine()
-a.new_transaction('transaccion 3')
-a.mine()
-a.new_transaction('transaccion 4')
-a.mine()
-len_bc = len(a.chain)
-print(a.print_block(len_bc - 1))
+@app.route("/newtransaction", methods = ["POST"])
+def new_transaction():
+    tx_data = request.get_json()
+    require_fields = ["author", "content"]
+    for field in require_fields:
+        if not tx_data.get(field):
+            return "datos de transacción inválidos", 404
+    tx_data["timestamp"] = time.time()
+    blockchain.new_transaction(tx_data)
+    return "Éxito", 201
 
 
         
